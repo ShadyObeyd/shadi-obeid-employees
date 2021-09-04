@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace EmployeesApp
 {
@@ -35,20 +36,14 @@ namespace EmployeesApp
                 {
                     Employee colleague = colleagues[j];
 
-                    if (currentEmployee.DateTo.HasValue)
+                    if (currentEmployee.DateTo < colleague.DateFrom)
                     {
-                        if (currentEmployee.DateTo.Value < colleague.DateFrom)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
 
-                    if (colleague.DateTo.HasValue)
+                    if (colleague.DateTo < currentEmployee.DateFrom)
                     {
-                        if (colleague.DateTo.Value < currentEmployee.DateFrom)
-                        {
-                            continue;
-                        }
+                        continue;
                     }
 
                     int currentEmpDaysWorked = (SetTodayForDate(currentEmployee.DateTo) - currentEmployee.DateFrom).Days;
@@ -89,24 +84,39 @@ namespace EmployeesApp
 
         public static List<Employee> GetEmployees()
         {
-            // TODO: Add reading data from text file.
+            string[] fileLines = File.ReadAllLines("../../../Employees.txt");
+
+            if (fileLines.Length == 0)
+            {
+                Console.WriteLine("No data to show.");
+                Environment.Exit(0);
+            }
+
             List<Employee> employeeList = new List<Employee>();
 
-            employeeList.Add(new Employee { Id = 143, ProjectId = 12, DateFrom = new DateTime(2013, 11, 01), DateTo = new DateTime(2014, 01, 05) });
+            foreach (string line in fileLines)
+            {
+                string[] lineTokens = line.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(l => l.Trim()).ToArray();
 
-            employeeList.Add(new Employee { Id = 218, ProjectId = 10, DateFrom = new DateTime(2012, 05, 16), DateTo = null });
-            employeeList.Add(new Employee { Id = 143, ProjectId = 10, DateFrom = new DateTime(2009, 01, 01), DateTo = new DateTime(2011, 04, 27) });
+                if (lineTokens.Length == 0)
+                {
+                    continue;
+                }
 
-            employeeList.Add(new Employee { Id = 115, ProjectId = 8, DateFrom = new DateTime(2010, 09, 02), DateTo = new DateTime(2016, 12, 22) });
-            employeeList.Add(new Employee { Id = 365, ProjectId = 8, DateFrom = new DateTime(2008, 10, 05), DateTo = null });
-            employeeList.Add(new Employee { Id = 284, ProjectId = 8, DateFrom = new DateTime(2011, 07, 28), DateTo = new DateTime(2012, 12, 21) });
+                int id = int.Parse(lineTokens[0]);
+                int projectId = int.Parse(lineTokens[1]);
+                DateTime dateFrom = DateTime.Parse(lineTokens[2]);
+                DateTime? dateTo = null;
 
-            employeeList.Add(new Employee { Id = 211, ProjectId = 33, DateFrom = new DateTime(2000, 01, 10), DateTo = null });
-            employeeList.Add(new Employee { Id = 245, ProjectId = 33, DateFrom = new DateTime(2005, 04, 03), DateTo = null });
+                if (lineTokens[3].ToLower() != "null")
+                {
+                    dateTo = DateTime.Parse(lineTokens[3]);
+                }
 
+                Employee employee = new Employee(id, projectId, dateFrom, dateTo);
 
-            employeeList.Add(new Employee { Id = 115, ProjectId = 25, DateFrom = new DateTime(1991, 01, 27), DateTo = new DateTime(2002, 07, 31) });
-            employeeList.Add(new Employee { Id = 365, ProjectId = 25, DateFrom = new DateTime(1995, 12, 01), DateTo = new DateTime(2006, 03, 03) });
+                employeeList.Add(employee);
+            }
 
             return employeeList;
         }

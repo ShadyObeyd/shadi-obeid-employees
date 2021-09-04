@@ -4,12 +4,20 @@ namespace EmployeesApp
 {
     public class Employee
     {
-        public int Id { get; set; }
+        public Employee(int id, int projectId, DateTime dateFrom, DateTime? dateTo)
+        {
+            Id = id;
+            ProjectId = projectId;
+            DateFrom = dateFrom;
+            DateTo = dateTo ?? DateTime.Today;
+        }
 
-        public int ProjectId { get; set; }
+        public int Id { get; }
 
-        public DateTime DateFrom { get; set; }
+        public int ProjectId { get; }
 
-        public DateTime? DateTo { get; set; }
+        public DateTime DateFrom { get; }
+
+        public DateTime DateTo { get; }
     }
 }
