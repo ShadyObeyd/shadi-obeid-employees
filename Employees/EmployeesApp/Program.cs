@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using System.Globalization;
 
 namespace EmployeesApp
 {
@@ -103,14 +104,16 @@ namespace EmployeesApp
                     continue;
                 }
 
+                var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.NeutralCultures);
+
                 int id = int.Parse(lineTokens[0]);
                 int projectId = int.Parse(lineTokens[1]);
-                DateTime dateFrom = DateTime.Parse(lineTokens[2]);
+                DateTime dateFrom = CreateDateFromString(lineTokens[2]);
                 DateTime? dateTo = null;
 
                 if (lineTokens[3].ToLower() != "null")
                 {
-                    dateTo = DateTime.Parse(lineTokens[3]);
+                    dateTo = CreateDateFromString(lineTokens[3]);
                 }
 
                 Employee employee = new Employee(id, projectId, dateFrom, dateTo);
@@ -129,6 +132,35 @@ namespace EmployeesApp
             }
 
             return DateTime.Today;
+        }
+
+        public static DateTime CreateDateFromString(string dateString)
+        {
+            if (string.IsNullOrEmpty(dateString))
+            {
+                return DateTime.Today;
+            }
+
+            string forwardSlashFormat = "MM/dd/yyyy";
+            string dashFormat = "yyyy-MM-dd";
+            string dotFormat = "dd.MM.yyyy";
+
+            if (dateString.Contains('/'))
+            {
+                return DateTime.ParseExact(dateString, forwardSlashFormat, CultureInfo.InvariantCulture);
+            }
+            else if (dateString.Contains('-'))
+            {
+                return DateTime.ParseExact(dateString, dashFormat, CultureInfo.InvariantCulture);
+            }
+            else if (dateString.Contains('.'))
+            {
+                return DateTime.ParseExact(dateString, dotFormat, CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                return DateTime.Parse(dateString);
+            }
         }
     }
 }
