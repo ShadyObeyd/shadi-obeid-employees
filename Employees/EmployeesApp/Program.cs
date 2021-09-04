@@ -98,7 +98,7 @@ namespace EmployeesApp
             {
                 string[] lineTokens = line.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(l => l.Trim()).ToArray();
 
-                if (lineTokens.Length == 0)
+                if (lineTokens.Length != 4)
                 {
                     continue;
                 }
