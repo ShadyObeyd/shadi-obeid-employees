@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.IO;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace EmployeesApp
 {
@@ -85,8 +85,19 @@ namespace EmployeesApp
 
         public static List<Employee> GetEmployees()
         {
-            string[] fileLines = File.ReadAllLines("../../../Employees.txt");
+            string[] fileLines = new string[0];
 
+            try
+            {
+                fileLines = File.ReadAllLines("../../../Employees.txt");
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.Message);
+                Environment.Exit(0);
+            }
+            
+            
             if (fileLines.Length == 0)
             {
                 Console.WriteLine("No data to show.");
@@ -103,8 +114,6 @@ namespace EmployeesApp
                 {
                     continue;
                 }
-
-                var cultures = System.Globalization.CultureInfo.GetCultures(System.Globalization.CultureTypes.NeutralCultures);
 
                 int id = int.Parse(lineTokens[0]);
                 int projectId = int.Parse(lineTokens[1]);
